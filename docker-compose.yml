@@ -1,0 +1,41 @@
+services:
+  db:
+    image: postgres:16
+    restart: always
+    command:
+      - postgres
+      - -c
+      - 'tcp_keepalives_idle=600'
+      - -c
+      - 'tcp_keepalives_interval=30'
+      - -c
+      - 'tcp_keepalives_count=10'
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: sajda
+      POSTGRES_USER: sajda
+      POSTGRES_PASSWORD: sajda
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+
+  redis:
+    image: redis:7.4-alpine
+    command: redis-server --appendonly yes --replica-read-only no --requirepass test
+    volumes:
+      - redis-data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+  redis-data:
+
+networks:
+  app-network:
+    driver: bridge
